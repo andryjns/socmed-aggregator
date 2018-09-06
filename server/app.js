@@ -13,5 +13,5 @@ app.use(bodyParser.json())
 app.use('/', router)    
 
 app.listen(3000, () => {
-    console.log("App server is running on port 3000")  // running terus kalau diengage
+    console.log("App server is running on port 3000")
 })

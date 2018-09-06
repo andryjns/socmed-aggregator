@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="./style.css">
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <script>
+    window.fbAsyncInit = function() {
+          FB.init({
+            appId            : '509600866133988',
+            autoLogAppEvents : true,
+            xfbml            : true,
+            version          : 'v3.1'
+          });
+        };
+      
+        (function(d, s, id){
+           var js, fjs = d.getElementsByTagName(s)[0];
+           if (d.getElementById(id)) {return;}
+           js = d.createElement(s); js.id = id;
+           js.src = "https://connect.facebook.net/en_US/sdk.js";
+           fjs.parentNode.insertBefore(js, fjs);
+         }(document, 'script', 'facebook-jssdk'));
+    </script>
+
+
+  <div class="container">
+    <div class="row">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="#">HacktivGit</a>
+          <div class="navbar-right">
+            <img src="https://via.placeholder.com/50x50" />
+            <p>dmtrxw</p>
+            <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+            </fb:login-button>
+          </div>
+        </div>
+      </nav>
+    </div>
+
+    <div class="row row-body ">
+      <div class="col-md-3 box">
+        <h4>Users</h4>
+        <ul style="list-style-type:none">
+          <li><a href="#" onclick="showRepo('windiana')">windiana</a></li>
+          <li><a href="#" onclick="showRepo('rizafahmi')">rizafahmi</a></li>
+          <li><a href="#" onclick="showRepo('rhamadiansyah')">rhamadiansyah</a></li>
+          <li><a href="#" onclick="showRepo('andryjns')">andryjns</a></li>
+          <li><a href="#" onclick="showRepo('harlesbayu')">harlesbayu</a></li>
+          <li><a href="#" onclick="showRepo('Gandryeanb')">Gandryeanb</a></li>
+
+        </ul>
+      </div>
+      <div class="col-md-3 box">
+        <input id="submit" class="search" type="text" placeholder="Search..."></input>
+
+        <div class="list">
+        </div>
+
+      </div>
+
+      <div id="single_repo" class="col-md-6 box">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let session = 'andryjns'
+
+    function showRepo(username) {
+      session = username
+
+      $.ajax({
+          url: `http://localhost:3000/searchRepo/${username}`,
+          method: "GET"
+        })
+        .done(result => {
+          $(".list").text('')
+          for (let i = 0; i < result.data.length; i++) {
+            if (result.data[i].stargazers_count > 0) {
+              $(".list").append(
+                ` 
+              <div class="card-body">
+                <h5 class="card-title">
+                  <a href="#" onclick="detail('${result.data[i].name}','${result.data[i].description}','${result.data[i].owner.login}')">${result.data[i].name}</a>
+                </h5>
+                <p class="card-text">${result.data[i].description}</p>
+                <p class="card-text">${result.data[i].stargazers_count} stars</p>
+              </div>
+              `
+              )
+            }
+          }
+        })
+        .fail(err => {
+          console.log(err)
+        })
+    }
+
+    showRepo(session)
+
+    function detail(name, description, username) {
+      $('#single_repo').text('')
+      $('#single_repo').append(
+        `
+          <h1>${name}</h1>
+
+          <p class="lead">
+            by
+            <a href="#">${username}</a>
+          </p>
+
+          <hr>
+
+          <!-- Post Content -->
+          <p class="lead">${description}</p>  
+      `
+      )
+    }
+
+
+    $("#submit").keyup(function () {
+
+      $.ajax({
+          url: `http://localhost:3000/searchRepo/${session}`,
+          method: "GET"
+        })
+        .done(result => {
+          $(".list").text('')
+          for (let i = 0; i < result.data.length; i++) {
+            if (result.data[i].name.indexOf($("#submit").val()) !== -1 && result.data[i].stargazers_count > 0) {
+              $(".list").append(
+                ` 
+              <div class="card-body">
+                <h5 class="card-title">
+                  <a href="#" onclick="detail('${result.data[i].name}','${result.data[i].description}','${result.data[i].owner.login}')">${result.data[i].name}</a>
+                </h5>
+                <p class="card-text">${result.data[i].description}</p>
+                <p class="card-text">${result.data[i].stargazers_count} stars</p>
+              </div>
+              `
+              )
+            }
+          }
+        })
+        .fail(err => {
+          console.log(err)
+        })
+    })
+
+    function checkLoginState() {
+      FB.getLoginStatus(function (response) {
+        console.log(response);
+      })
+    }
+  </script>
+
+
+</body>
+
+</html>

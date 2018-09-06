@@ -3,10 +3,10 @@ const express = require('express')
 const router = express.Router()
 const users = require('./userRouter')
 
-router.use('/', users)
+router.use('/repo', users)
 
-// router.get('/', function(req, res){
-//     res.redirect('/api')
-// })
+router.get('/', function(req, res){
+    res.redirect('/repo')
+})
 
 module.exports = router
